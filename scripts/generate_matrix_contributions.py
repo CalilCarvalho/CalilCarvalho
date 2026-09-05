@@ -26,8 +26,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 WIDTH = 1000
 HEIGHT = 340
-FRAMES = 42
-FRAME_DURATION_MS = 85
+FRAMES = 72
+FRAME_DURATION_MS = 130
 
 PHRASE = "WAKE UP, DEVelop a new world_"
 CHARS = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/[]{}#$%&*+-=;:"
@@ -253,7 +253,7 @@ def text_center(draw, text, y, font, fill):
     draw.text(((WIDTH - w) // 2, y), text, font=font, fill=fill)
 
 
-def generate(username: str, cells: list[dict], output: Path):
+def generate(username: str, display_name: str, cells: list[dict], output: Path):
     output.parent.mkdir(parents=True, exist_ok=True)
 
     matrix_font = load_font(MATRIX_FONT_SIZE)
@@ -300,7 +300,7 @@ def generate(username: str, cells: list[dict], output: Path):
         draw_grid(draw, cells, origin_x, origin_y, frame_idx)
 
         # Header
-        header = f"@{username}" if username != "demo" else "@your-github"
+        header = display_name
         text_center(draw, header, 28, small_font, (75, 235, 110))
 
         # Phrase: steady glow with a subtle terminal cursor pulse.
@@ -333,6 +333,7 @@ def main():
     parser = argparse.ArgumentParser(description="Generate Matrix-style GitHub contribution GIF.")
     parser.add_argument("username", nargs="?", help="GitHub username")
     parser.add_argument("--demo", action="store_true", help="Generate a synthetic demo without network access")
+    parser.add_argument("--display-name", default="@CalilCarvalho", help="Text shown above the contribution grid")
     parser.add_argument("--output", default=str(OUTPUT), help="Output GIF path")
     args = parser.parse_args()
 
@@ -346,7 +347,7 @@ def main():
         days = fetch_contributions(username)
 
     cells = build_grid(days)
-    generate(username, cells, Path(args.output))
+    generate(username, args.display_name, cells, Path(args.output))
     print(f"OK: {args.output}")
 
 

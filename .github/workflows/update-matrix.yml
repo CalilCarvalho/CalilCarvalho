@@ -27,14 +27,44 @@ jobs:
         run: pip install -r requirements.txt
 
       - name: Generate Matrix contributions GIF
-        run: python scripts/generate_matrix_contributions.py "${{ github.repository_owner }}"
+        run: python scripts/generate_matrix_contributions.py "${{ github.repository_owner }}" --display-name "@CalilCarvalho"
+
+      - name: Refresh profile image URL
+        env:
+          MATRIX_CACHE_VERSION: "${{ github.run_id }}-${{ github.run_attempt }}"
+        shell: bash
+        run: |
+          python - <<'PY'
+          import os
+          import re
+          from pathlib import Path
+
+          path = Path("README.md")
+          text = path.read_text(encoding="utf-8")
+          version = os.environ["MATRIX_CACHE_VERSION"]
+
+          pattern = r'(\./assets/matrix-contributions\.gif)(?:\?v=[^"\'\s)>]+)?'
+          updated, count = re.subn(
+              pattern,
+              lambda match: f"{match.group(1)}?v={version}",
+              text,
+          )
+
+          if count == 0:
+              raise SystemExit(
+                  "Não encontrei ./assets/matrix-contributions.gif no README.md."
+              )
+
+          path.write_text(updated, encoding="utf-8")
+          print(f"README cache version atualizado para: {version}")
+          PY
 
       - name: Commit generated animation
         shell: bash
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/matrix-contributions.gif
+          git add assets/matrix-contributions.gif README.md
 
           if git diff --cached --quiet; then
             echo "No changes to commit."
