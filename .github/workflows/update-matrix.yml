@@ -1,0 +1,45 @@
+name: Update Matrix Contributions
+
+on:
+  workflow_dispatch:
+  schedule:
+    # 09:00 UTC = 06:00 em Brasília quando UTC-3.
+    - cron: "0 9 * * *"
+
+permissions:
+  contents: write
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Generate Matrix contributions GIF
+        run: python scripts/generate_matrix_contributions.py "${{ github.repository_owner }}"
+
+      - name: Commit generated animation
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add assets/matrix-contributions.gif
+
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+
+          git commit -m "chore: update Matrix contributions"
+          git push
