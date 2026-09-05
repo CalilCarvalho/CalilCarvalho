@@ -26,8 +26,8 @@ from PIL import Image, ImageDraw, ImageFont
 
 WIDTH = 1000
 HEIGHT = 340
-FRAMES = 72
-FRAME_DURATION_MS = 130
+FRAMES = 84
+FRAME_DURATION_MS = 150
 
 PHRASE = "WAKE UP, DEVelop a new world_"
 CHARS = "01ABCDEFGHIJKLMNOPQRSTUVWXYZ<>/[]{}#$%&*+-=;:"
