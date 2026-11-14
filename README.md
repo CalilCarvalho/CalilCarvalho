@@ -5,7 +5,7 @@
 
 <p align="center">
   <img
-    src="./assets/matrix-contributions.gif?v=43468529359-1"
+    src="./assets/matrix-contributions.gif?v=43611305867-1"
     alt="Matrix-style GitHub contribution animation"
     width="1000"
   />
